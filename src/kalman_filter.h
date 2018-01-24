@@ -23,6 +23,9 @@ public:
   // measurement covariance matrix
   Eigen::MatrixXd R_;
 
+  //Identity Matrix
+  //Eigen::MatrixXd I;
+
   /**
    * Constructor
    */
@@ -63,6 +66,8 @@ public:
    * @param z The measurement at k+1
    */
   void UpdateEKF(const Eigen::VectorXd &z);
+
+  void UpdateGivenY(const Eigen::VectorXd &y);
 
 };
 

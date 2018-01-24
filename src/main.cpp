@@ -5,6 +5,8 @@
 #include "FusionEKF.h"
 #include "tools.h"
 
+#define PRINT_DEBUG
+
 using namespace std;
 
 // for convenience
@@ -28,6 +30,10 @@ std::string hasData(std::string s) {
 
 int main()
 {
+#ifdef PRINT_DEBUG
+  cout << "PRINT DEBUG enabled." << endl;
+#endif
+
   uWS::Hub h;
 
   // Create a Kalman Filter instance
@@ -67,6 +73,9 @@ int main()
     	  iss >> sensor_type;
 
     	  if (sensor_type.compare("L") == 0) {
+#ifdef PRINT_DEBUG
+    	        cout << "laser" << endl;
+#endif
       	  		meas_package.sensor_type_ = MeasurementPackage::LASER;
           		meas_package.raw_measurements_ = VectorXd(2);
           		float px;
@@ -77,7 +86,9 @@ int main()
           		iss >> timestamp;
           		meas_package.timestamp_ = timestamp;
           } else if (sensor_type.compare("R") == 0) {
-
+#ifdef PRINT_DEBUG
+              cout << "radar" << endl;
+#endif
       	  		meas_package.sensor_type_ = MeasurementPackage::RADAR;
           		meas_package.raw_measurements_ = VectorXd(3);
           		float ro;
@@ -90,7 +101,7 @@ int main()
           		iss >> timestamp;
           		meas_package.timestamp_ = timestamp;
           }
-          float x_gt;
+        float x_gt;
     	  float y_gt;
     	  float vx_gt;
     	  float vy_gt;
@@ -105,9 +116,14 @@ int main()
     	  gt_values(3) = vy_gt;
     	  ground_truth.push_back(gt_values);
           
+#ifdef PRINT_DEBUG
+    	  cout << "Processing Measurement" << endl;
+#endif
           //Call ProcessMeasurment(meas_package) for Kalman filter
     	  fusionEKF.ProcessMeasurement(meas_package);    	  
-
+#ifdef PRINT_DEBUG
+        cout << "Finished Processing Measurement" << endl;
+#endif
     	  //Push the current estimated x,y positon from the Kalman filter's state vector
 
     	  VectorXd estimate(4);
@@ -123,9 +139,14 @@ int main()
     	  estimate(3) = v2;
     	  
     	  estimations.push_back(estimate);
-
+#ifdef PRINT_DEBUG
+        cout << "Computing RMSE" << endl;
+#endif
     	  VectorXd RMSE = tools.CalculateRMSE(estimations, ground_truth);
-
+#ifdef PRINT_DEBUG
+        cout << "Completed RMSE" << endl;
+        cout << "Accuracy - RMSE:" << endl << RMSE << endl;
+#endif
           json msgJson;
           msgJson["estimate_x"] = p_x;
           msgJson["estimate_y"] = p_y;
@@ -158,7 +179,7 @@ int main()
     else
     {
       // i guess this should be done more gracefully?
-      res->end(nullptr, 0);
+     res->end(nullptr, 0);
     }
   });
 
