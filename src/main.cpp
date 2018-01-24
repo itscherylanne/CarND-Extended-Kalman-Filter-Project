@@ -5,7 +5,8 @@
 #include "FusionEKF.h"
 #include "tools.h"
 
-#define PRINT_DEBUG
+//Un-comment define below to view print debug statements
+//#define PRINT_DEBUG
 
 using namespace std;
 

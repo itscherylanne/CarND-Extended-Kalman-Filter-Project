@@ -9,9 +9,6 @@ using Eigen::VectorXd;
 
 using namespace std;
 
-// Please note that the Eigen library does not initialize 
-// VectorXd or MatrixXd objects with zeros upon creation.
-
 KalmanFilter::KalmanFilter() {}
 
 KalmanFilter::~KalmanFilter() {}
@@ -24,9 +21,6 @@ void KalmanFilter::Init(VectorXd &x_in, MatrixXd &P_in, MatrixXd &F_in,
   H_ = H_in;
   R_ = R_in;
   Q_ = Q_in;
-
-  //I = MatrixXd::Identity(4, 4);
-
 }
 
 void KalmanFilter::Predict() {
@@ -35,25 +29,11 @@ void KalmanFilter::Predict() {
   P_ = F_ * P_ * Ft + Q_;
 }
 
-void KalmanFilter::UpdateGivenY( const VectorXd &y){
-  MatrixXd Ht = H_.transpose();
-  MatrixXd S = H_ * P_ * Ht + R_;
-  MatrixXd Si = S.inverse();
-  MatrixXd PHt = P_ * Ht;
-  MatrixXd K = PHt * Si;
-
-  //new estimate
-  x_ = x_ + (K * y);
-  long x_size = x_.size();
-  MatrixXd I = MatrixXd::Identity(x_size, x_size);
-  P_ = (I - K * H_) * P_;
-}
 
 void KalmanFilter::Update(const VectorXd &z) {
   VectorXd z_pred = H_ * x_;
   VectorXd y = z - z_pred;
 
-  //UpdateGivenY(y);
   MatrixXd Ht = H_.transpose();
   MatrixXd S = H_ * P_ * Ht + R_;
   MatrixXd Si = S.inverse();
@@ -103,8 +83,6 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
     y(1)+= 2.0*PI;
   }
 
-  cout << "UpdateEKF: Update given Y" << endl;
-  //UpdateGivenY(y);
   MatrixXd Ht = H_.transpose();
   MatrixXd S = H_ * P_ * Ht + R_;
   MatrixXd Si = S.inverse();

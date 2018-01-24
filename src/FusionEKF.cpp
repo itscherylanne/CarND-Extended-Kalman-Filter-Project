@@ -8,7 +8,8 @@ using Eigen::MatrixXd;
 using Eigen::VectorXd;
 using std::vector;
 
-#define PRINT_DEBUG
+//Un-comment define below to view print debug statements
+//#define PRINT_DEBUG
 
 /*
  * Constructor.
@@ -33,11 +34,7 @@ FusionEKF::FusionEKF() {
         0, 0.0009, 0,
         0, 0, 0.09;
 
-  /**
-  TODO:
-    * Finish initializing the FusionEKF.
-    * Set the process and measurement noises
-  */
+
   H_laser_ << 1, 0, 0, 0,
               0, 1, 0, 0;
 
@@ -45,8 +42,10 @@ FusionEKF::FusionEKF() {
          0, 1, 0, 0,
          0, 0, 1, 0;
 
-  //TODO: Initialize ekf_: x_ P_ F_ H_ R_ and Q_
-  ekf_.Q_ = MatrixXd(4, 4); //state covariance matrix P
+
+  ekf_.Q_ = MatrixXd(4, 4);
+
+  //state covariance matrix P
   ekf_.P_ = MatrixXd(4, 4);
   ekf_.P_ << 1, 0, 0, 0,
         0, 1, 0, 0,
@@ -149,11 +148,15 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
    ****************************************************************************/
 
   if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
+#ifdef PRINT_DEBUG
     // Radar updates: Update EKF
-    //cout << "Radar: Calculate jacboian" << endl;
+    cout << "Radar: Calculate jacboian" << endl;
+#endif
    ekf_.H_ = tools.CalculateJacobian(ekf_.x_);
     ekf_.R_ = R_radar_;
-    //cout << "Radar: Update EKF" << endl;
+#ifdef PRINT_DEBUG
+    cout << "Radar: Update EKF" << endl;
+#endif
     ekf_.UpdateEKF(measurement_pack.raw_measurements_);
   } else {
     // Laser updates: Regular Update
